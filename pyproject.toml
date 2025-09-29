@@ -43,9 +43,9 @@ dev = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/yourusername/tradingkit"
-"Bug Tracker" = "https://github.com/yourusername/tradingkit/issues"
-"Documentation" = "https://github.com/yourusername/tradingkit#readme"
+"Homepage" = "https://github.com/ThomasvdHulst/riskoptimix"
+"Bug Tracker" = "https://github.com/ThomasvdHulst/riskoptimix/issues"
+"Documentation" = "https://github.com/ThomasvdHulst/riskoptimix#readme"
 
 [tool.black]
 line-length = 88
