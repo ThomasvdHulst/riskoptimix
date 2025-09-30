@@ -19,3 +19,8 @@ class ValidationError(RiskOptimixError):
 class BacktestError(RiskOptimixError):
     """Raised when backtest encounters an error"""
     pass
+
+
+class UserError(RiskOptimixError):
+    """Raised when user input is invalid"""
+    pass
