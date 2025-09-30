@@ -1,4 +1,4 @@
-""" Data fetching and handling utilities """
+"""Data fetching and handling utilities"""
 
 # Import used libraries
 import logging
@@ -17,7 +17,7 @@ def get_data(
     symbol: str,
     start: Optional[Union[str, datetime]] = None,
     end: Optional[Union[str, datetime]] = None,
-    interval: str = '1d',
+    interval: str = "1d",
 ) -> pd.DataFrame:
     """
     Fetch historical price data for a given symbol.
@@ -86,16 +86,18 @@ def get_data(
             raise DataError(f"No data found for {symbol} between {start} and {end}")
 
         # Clean up the dataframe
-        df.index.name = 'date'
+        df.index.name = "date"
 
         # Standardize column names to lowercase
         df.columns = [col.lower() for col in df.columns]
 
         # Remove any rows with NaN values
-        critical_columns = ['open', 'high', 'low', 'close']
+        critical_columns = ["open", "high", "low", "close"]
         df = df.dropna(subset=[col for col in critical_columns if col in df.columns])
 
-        logger.info(f"Successfully fetched {len(df)} rows of data for {symbol} between {start} and {end}")
+        logger.info(
+            f"Successfully fetched {len(df)} rows of data for {symbol} between {start} and {end}"
+        )
 
         return df
 

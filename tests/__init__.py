@@ -1,1 +1,1 @@
-""" Test suite for RiskOptimix """
+"""Test suite for RiskOptimix"""

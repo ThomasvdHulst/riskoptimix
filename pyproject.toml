@@ -12,6 +12,7 @@ description = "A simple Python toolkit for algorithmic trading"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
+keywords = ["trading", "finance", "algorithmic-trading", "technical-analysis", "backtesting"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

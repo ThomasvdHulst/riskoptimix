@@ -1,4 +1,4 @@
-""" 
+"""
 RiskOptimix - A simple Python toolkit for algorithmic trading
 """
 

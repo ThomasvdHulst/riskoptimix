@@ -1,4 +1,4 @@
-""" Technical indicators for trading """
+"""Technical indicators for trading"""
 
 # Import used libraries
 import pandas as pd
@@ -6,16 +6,17 @@ import numpy as np
 import warnings
 from typing import Literal, Optional, List
 
-from .exceptions import ValidationError, UserError
+from .exceptions import ValidationError
 
 
 # ========================================================
 # Basic indicators
 # ========================================================
 
+
 def sma(prices: pd.Series, period: int = 20) -> pd.Series:
-    """ Calculate the Simple Moving Average (SMA) 
-    
+    """Calculate the Simple Moving Average (SMA)
+
     Parameters
     ----------
     prices: pd.Series
@@ -45,8 +46,8 @@ def sma(prices: pd.Series, period: int = 20) -> pd.Series:
 
 
 def ema(prices: pd.Series, period: int = 20) -> pd.Series:
-    """ Calculate the Exponential Moving Average (EMA) 
-    
+    """Calculate the Exponential Moving Average (EMA)
+
     Parameters
     ----------
     prices: pd.Series
@@ -56,7 +57,7 @@ def ema(prices: pd.Series, period: int = 20) -> pd.Series:
 
 
     Returns
-    ------- 
+    -------
     pd.Series
         The EMA values
 
@@ -72,18 +73,17 @@ def ema(prices: pd.Series, period: int = 20) -> pd.Series:
 
     if period < 1:
         raise ValidationError("Period must be at least 1")
-    
-    return prices.ewm(span=period, adjust=False).mean()
 
+    return prices.ewm(span=period, adjust=False).mean()
 
 
 # ========================================================
 # Momentum indicators
 # ========================================================
-    
-    
+
+
 def rsi(prices: pd.Series, period: int = 14) -> pd.Series:
-    """ 
+    """
     Calculate the Relative Strength Index (RSI)
 
     Parameters
@@ -102,7 +102,7 @@ def rsi(prices: pd.Series, period: int = 14) -> pd.Series:
     ------
     ValidationError
         If the period is less than 1
-    
+
     Examples
     --------
     >>> rsi_14 = rsi(df['close'], period=14)
@@ -110,7 +110,7 @@ def rsi(prices: pd.Series, period: int = 14) -> pd.Series:
 
     if period < 1:
         raise ValidationError("Period must be at least 1")
-    
+
     delta = prices.diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
@@ -123,9 +123,9 @@ def macd(
     prices: pd.Series,
     fast_period: int = 12,
     slow_period: int = 26,
-    signal_period: int = 9
+    signal_period: int = 9,
 ) -> pd.DataFrame:
-    """ Calculate the Moving Average Convergence Divergence (MACD)
+    """Calculate the Moving Average Convergence Divergence (MACD)
 
     Parameters
     ----------
@@ -163,11 +163,10 @@ def macd(
     signal_line = ema(macd_line, period=signal_period)
     histogram = macd_line - signal_line
 
-    return pd.DataFrame({ 
-        'macd': macd_line,
-        'signal': signal_line,
-        'histogram': histogram
-    }, index=prices.index)
+    return pd.DataFrame(
+        {"macd": macd_line, "signal": signal_line, "histogram": histogram},
+        index=prices.index,
+    )
 
 
 def stochastic(
@@ -176,9 +175,9 @@ def stochastic(
     close: pd.Series,
     period: int = 14,
     smooth_k: int = 3,
-    smooth_d: int = 3
+    smooth_d: int = 3,
 ) -> pd.DataFrame:
-    """ Calculate the Stochastic Oscillator
+    """Calculate the Stochastic Oscillator
 
     Parameters
     ----------
@@ -225,10 +224,7 @@ def stochastic(
     # Calculate %D (signal line)
     d_percent = k_smooth.rolling(window=smooth_d).mean()
 
-    return pd.DataFrame({
-        'k': k_smooth,
-        'd': d_percent
-    }, index=close.index)
+    return pd.DataFrame({"k": k_smooth, "d": d_percent}, index=close.index)
 
 
 def rate_of_change(prices: pd.Series, period: int = 10) -> pd.Series:
@@ -267,12 +263,11 @@ def rate_of_change(prices: pd.Series, period: int = 10) -> pd.Series:
 # Volatility indicators
 # ========================================================
 
+
 def bollinger_bands(
-    prices: pd.Series,
-    period: int = 20,
-    std_dev: int = 2
+    prices: pd.Series, period: int = 20, std_dev: int = 2
 ) -> pd.DataFrame:
-    """ 
+    """
     Calculate the Bollinger Bands
 
     Parameters
@@ -308,20 +303,16 @@ def bollinger_bands(
     upper_band = middle_band + (std_dev * std)
     lower_band = middle_band - (std_dev * std)
 
-    return pd.DataFrame({
-        'middle': middle_band,
-        'upper': upper_band,
-        'lower': lower_band
-    }, index=prices.index)
+    return pd.DataFrame(
+        {"middle": middle_band, "upper": upper_band, "lower": lower_band},
+        index=prices.index,
+    )
 
 
 def atr(
-    high: pd.Series,
-    low: pd.Series,
-    close: pd.Series,
-    period: int = 14
+    high: pd.Series, low: pd.Series, close: pd.Series, period: int = 14
 ) -> pd.Series:
-    """ 
+    """
     Calculate the Average True Range (ATR)
 
     Parameters
@@ -344,7 +335,7 @@ def atr(
     ------
     ValidationError
         If the period is less than 1
-        
+
     Examples
     --------
     >>> atr_14 = atr(df['high'], df['low'], df['close'], period=14)
@@ -362,7 +353,9 @@ def atr(
     return true_range.rolling(window=period).mean()
 
 
-def volatility(prices: pd.Series, period: int = 20, annualized: bool = False) -> pd.Series:
+def volatility(
+    prices: pd.Series, period: int = 20, annualized: bool = False
+) -> pd.Series:
     """
     Calculate the simple volatility (std of the returns)
 
@@ -407,6 +400,7 @@ def volatility(prices: pd.Series, period: int = 20, annualized: bool = False) ->
 # Volume indicators
 # ========================================================
 
+
 def obv(prices: pd.Series, volume: pd.Series) -> pd.Series:
     """
     Calculate the On Balance Volume (OBV)
@@ -443,11 +437,11 @@ def obv(prices: pd.Series, volume: pd.Series) -> pd.Series:
 
     for i in range(1, len(prices)):
         if price_diff.iloc[i] > 0:
-            obv_values.iloc[i] = obv_values.iloc[i-1] + volume.iloc[i]
+            obv_values.iloc[i] = obv_values.iloc[i - 1] + volume.iloc[i]
         elif price_diff.iloc[i] < 0:
-            obv_values.iloc[i] = obv_values.iloc[i-1] - volume.iloc[i]
+            obv_values.iloc[i] = obv_values.iloc[i - 1] - volume.iloc[i]
         else:
-            obv_values.iloc[i] = obv_values.iloc[i-1]
+            obv_values.iloc[i] = obv_values.iloc[i - 1]
 
     return obv_values
 
@@ -535,11 +529,9 @@ def volume_ratio(volume: pd.Series, period: int = 20) -> pd.Series:
 # Trend indicators
 # ========================================================
 
+
 def adx(
-    high: pd.Series,
-    low: pd.Series,
-    close: pd.Series,
-    period: int = 14
+    high: pd.Series, low: pd.Series, close: pd.Series, period: int = 14
 ) -> pd.Series:
     """
     Calculate the Average Directional Index (ADX)
@@ -572,7 +564,7 @@ def adx(
 
     if period < 1:
         raise ValidationError("Period must be at least 1")
-    
+
     if len(high) != len(low) or len(high) != len(close):
         raise ValidationError("All input series must have the same length")
 
@@ -590,14 +582,18 @@ def adx(
     neg_dm = pd.Series(0.0, index=high.index)
 
     # +DM when up_move > down_move and up_move > 0
-    pos_dm[(up_move > down_move) & (up_move > 0)] = up_move[(up_move > down_move) & (up_move > 0)]
-    
-    # -DM when down_move > up_move and down_move > 0  
-    neg_dm[(down_move > up_move) & (down_move > 0)] = down_move[(down_move > up_move) & (down_move > 0)]
+    pos_dm[(up_move > down_move) & (up_move > 0)] = up_move[
+        (up_move > down_move) & (up_move > 0)
+    ]
+
+    # -DM when down_move > up_move and down_move > 0
+    neg_dm[(down_move > up_move) & (down_move > 0)] = down_move[
+        (down_move > up_move) & (down_move > 0)
+    ]
 
     # Apply Wilder's smoothing (similar to EMA with alpha = 1/period)
     alpha = 1.0 / period
-    
+
     tr_smooth = tr.ewm(alpha=alpha, adjust=False).mean()
     pos_dm_smooth = pos_dm.ewm(alpha=alpha, adjust=False).mean()
     neg_dm_smooth = neg_dm.ewm(alpha=alpha, adjust=False).mean()
@@ -608,7 +604,7 @@ def adx(
 
     # Calculate DX
     dx = 100 * np.abs(pos_di - neg_di) / (pos_di + neg_di)
-    
+
     # Calculate ADX (smoothed DX)
     adx_values = dx.ewm(alpha=alpha, adjust=False).mean()
 
@@ -619,11 +615,14 @@ def adx(
 # Dataset preperation functions
 # ========================================================
 
+
 def prepare_data(
     df: pd.DataFrame,
-    profile: Literal['basic', 'momentum', 'volatility', 'volume', 'trend', 'all', 'custom'] = 'basic',
+    profile: Literal[
+        "basic", "momentum", "volatility", "volume", "trend", "all", "custom"
+    ] = "basic",
     custom_indicators: Optional[List[str]] = None,
-    **kwargs
+    **kwargs,
 ) -> pd.DataFrame:
     """
     Prepare a dataset by adding multiple technical indicators based on a profile.
@@ -656,11 +655,11 @@ def prepare_data(
     ValidationError
         If the input is not a pandas DataFrame, if the dataframe is empty,
         if required columns are missing, if columns contain non-numeric data,
-        if the profile is invalid, if custom indicators are not provided for 
+        if the profile is invalid, if custom indicators are not provided for
         custom profile, if no valid indicators are found in custom_indicators,
         or if there's an error calculating any indicator
     UserWarning
-        If an unknown indicator is specified in custom_indicators, if an 
+        If an unknown indicator is specified in custom_indicators, if an
         indicator returns None or empty results, or if an indicator returns
         an unexpected data type
 
@@ -674,7 +673,7 @@ def prepare_data(
     # Validate input dataframe
     if not isinstance(df, pd.DataFrame):
         raise ValidationError("Input must be a pandas DataFrame")
-    
+
     if df.empty:
         raise ValidationError("Input dataframe cannot be empty")
 
@@ -682,11 +681,11 @@ def prepare_data(
     result = df.copy()
 
     # Validate required columns
-    required_cols = ['open', 'high', 'low', 'close', 'volume']
+    required_cols = ["open", "high", "low", "close", "volume"]
     missing_cols = [col for col in required_cols if col not in result.columns]
     if missing_cols:
         raise ValidationError(f"Missing required columns: {missing_cols}")
-    
+
     # Validate that required columns contain numeric data
     for col in required_cols:
         if not pd.api.types.is_numeric_dtype(result[col]):
@@ -694,101 +693,125 @@ def prepare_data(
 
     # Define indicator profiles
     profiles = {
-        'basic': {
-            'sma_20': lambda: sma(result['close'], period=20),
-            'sma_50': lambda: sma(result['close'], period=50),
-            'rsi_14': lambda: rsi(result['close'], period=14),
-            'volume_ratio': lambda: volume_ratio(result['volume'], period=20),
+        "basic": {
+            "sma_20": lambda: sma(result["close"], period=20),
+            "sma_50": lambda: sma(result["close"], period=50),
+            "rsi_14": lambda: rsi(result["close"], period=14),
+            "volume_ratio": lambda: volume_ratio(result["volume"], period=20),
         },
-        'momentum': {
-            'rsi_14': lambda: rsi(result['close'], period=14),
-            'rsi_9': lambda: rsi(result['close'], period=9),
-            'macd': lambda: macd(result['close']),
-            'stochastic': lambda: stochastic(result['high'], result['low'], result['close']),
-            'roc_10': lambda: rate_of_change(result['close'], period=10),
+        "momentum": {
+            "rsi_14": lambda: rsi(result["close"], period=14),
+            "rsi_9": lambda: rsi(result["close"], period=9),
+            "macd": lambda: macd(result["close"]),
+            "stochastic": lambda: stochastic(
+                result["high"], result["low"], result["close"]
+            ),
+            "roc_10": lambda: rate_of_change(result["close"], period=10),
         },
-        'volatility': {
-            'bb': lambda: bollinger_bands(result['close']),
-            'atr_14': lambda: atr(result['high'], result['low'], result['close'], period=14),
-            'volatility_20': lambda: volatility(result['close'], period=20),
+        "volatility": {
+            "bb": lambda: bollinger_bands(result["close"]),
+            "atr_14": lambda: atr(
+                result["high"], result["low"], result["close"], period=14
+            ),
+            "volatility_20": lambda: volatility(result["close"], period=20),
         },
-        'volume': {
-            'obv': lambda: obv(result['close'], result['volume']),
-            'vwap': lambda: vwap(result['high'], result['low'], result['close'], result['volume']),
-            'volume_ratio': lambda: volume_ratio(result['volume'], period=20),
-            'volume_sma': lambda: sma(result['volume'], period=20),
+        "volume": {
+            "obv": lambda: obv(result["close"], result["volume"]),
+            "vwap": lambda: vwap(
+                result["high"], result["low"], result["close"], result["volume"]
+            ),
+            "volume_ratio": lambda: volume_ratio(result["volume"], period=20),
+            "volume_sma": lambda: sma(result["volume"], period=20),
         },
-        'trend': {
-            'sma_10': lambda: sma(result['close'], period=10),
-            'sma_20': lambda: sma(result['close'], period=20),
-            'sma_50': lambda: sma(result['close'], period=50),
-            'ema_12': lambda: ema(result['close'], period=12),
-            'ema_26': lambda: ema(result['close'], period=26),
-            'macd': lambda: macd(result['close']),
-            'adx_14': lambda: adx(result['high'], result['low'], result['close'], period=14),
+        "trend": {
+            "sma_10": lambda: sma(result["close"], period=10),
+            "sma_20": lambda: sma(result["close"], period=20),
+            "sma_50": lambda: sma(result["close"], period=50),
+            "ema_12": lambda: ema(result["close"], period=12),
+            "ema_26": lambda: ema(result["close"], period=26),
+            "macd": lambda: macd(result["close"]),
+            "adx_14": lambda: adx(
+                result["high"], result["low"], result["close"], period=14
+            ),
         },
-        'all': {},
-    }        
+        "all": {},
+    }
 
     # Build all profile
     for profile_indicators in profiles.values():
-        if profile_indicators: # Skip all itself
-            profiles['all'].update(profile_indicators)
+        if profile_indicators:  # Skip all itself
+            profiles["all"].update(profile_indicators)
 
     # Additional indicators for all
-    profiles['all'].update({
-        'sma_200': lambda: sma(result['close'], period=200),
-        'ema_50': lambda: ema(result['close'], period=50),
-        'rsi_21': lambda: rsi(result['close'], period=21),
-        'atr_20': lambda: atr(result['high'], result['low'], result['close'], period=20),
-    })
+    profiles["all"].update(
+        {
+            "sma_200": lambda: sma(result["close"], period=200),
+            "ema_50": lambda: ema(result["close"], period=50),
+            "rsi_21": lambda: rsi(result["close"], period=21),
+            "atr_20": lambda: atr(
+                result["high"], result["low"], result["close"], period=20
+            ),
+        }
+    )
 
     # Handle custom profile
-    if profile == 'custom':
+    if profile == "custom":
         if not custom_indicators:
-            raise ValidationError("Custom profile requires custom_indicators (e.g. ['sma_20', 'rsi_14'])")
+            raise ValidationError(
+                "Custom profile requires custom_indicators (e.g. ['sma_20', 'rsi_14'])"
+            )
 
         indicators_to_add = {}
         for indicator_spec in custom_indicators:
             # Parse the indicator name (e.g. 'sma_20' -> ('sma', 20))
-            parts = indicator_spec.split('_')
+            parts = indicator_spec.split("_")
             indicator_name = parts[0]
 
             # Try to parse period if involved
             period = int(parts[1]) if len(parts) > 1 and parts[1].isdigit() else None
 
             # Map to functions
-            if indicator_name == 'sma' and period:
-                indicators_to_add[indicator_spec] = lambda p=period: sma(result['close'], p)
-            elif indicator_name == 'ema' and period:
-                indicators_to_add[indicator_spec] = lambda p=period: ema(result['close'], p)
-            elif indicator_name == 'rsi' and period:
-                indicators_to_add[indicator_spec] = lambda p=period: rsi(result['close'], p)
-            elif indicator_name == 'atr' and period:
-                indicators_to_add[indicator_spec] = lambda p=period: atr(
-                    result['high'], result['low'], result['close'], p
+            if indicator_name == "sma" and period:
+                indicators_to_add[indicator_spec] = lambda p=period: sma(
+                    result["close"], p
                 )
-            elif indicator_name == 'bb':
-                indicators_to_add['bb'] = lambda: bollinger_bands(result['close'])
-            elif indicator_name == 'macd':
-                indicators_to_add['macd'] = lambda: macd(result['close'])
-            elif indicator_name == 'obv':
-                indicators_to_add['obv'] = lambda: obv(result['close'], result['volume'])
-            elif indicator_name == 'vwap':
-                indicators_to_add['vwap'] = lambda: vwap(
-                    result['high'], result['low'], result['close'], result['volume']
+            elif indicator_name == "ema" and period:
+                indicators_to_add[indicator_spec] = lambda p=period: ema(
+                    result["close"], p
+                )
+            elif indicator_name == "rsi" and period:
+                indicators_to_add[indicator_spec] = lambda p=period: rsi(
+                    result["close"], p
+                )
+            elif indicator_name == "atr" and period:
+                indicators_to_add[indicator_spec] = lambda p=period: atr(
+                    result["high"], result["low"], result["close"], p
+                )
+            elif indicator_name == "bb":
+                indicators_to_add["bb"] = lambda: bollinger_bands(result["close"])
+            elif indicator_name == "macd":
+                indicators_to_add["macd"] = lambda: macd(result["close"])
+            elif indicator_name == "obv":
+                indicators_to_add["obv"] = lambda: obv(
+                    result["close"], result["volume"]
+                )
+            elif indicator_name == "vwap":
+                indicators_to_add["vwap"] = lambda: vwap(
+                    result["high"], result["low"], result["close"], result["volume"]
                 )
             else:
                 warnings.warn(f"Unknown indicator: {indicator_spec}")
                 continue  # Skip unknown indicators instead of adding them
-                
+
         # Only proceed if we have indicators to add
         if not indicators_to_add:
             raise ValidationError("No valid indicators found in custom_indicators")
     else:
         # Use predefined profile
         if profile not in profiles:
-            raise ValidationError(f"Invalid profile: {profile}. Choose from {list(profiles.keys())}")
+            raise ValidationError(
+                f"Invalid profile: {profile}. Choose from {list(profiles.keys())}"
+            )
 
         indicators_to_add = profiles[profile]
 
@@ -806,21 +829,29 @@ def prepare_data(
             if isinstance(indicator_result, pd.DataFrame):
                 # For indicators that have multiple columns, add each column as a separate column
                 if indicator_result.empty:
-                    warnings.warn(f"Indicator {indicator_name} returned empty DataFrame, skipping")
+                    warnings.warn(
+                        f"Indicator {indicator_name} returned empty DataFrame, skipping"
+                    )
                     continue
                 for col in indicator_result.columns:
-                    result[f'{indicator_name}_{col}'] = indicator_result[col]
+                    result[f"{indicator_name}_{col}"] = indicator_result[col]
             elif isinstance(indicator_result, pd.Series):
                 # For single-column indicators, add as is
                 if indicator_result.empty:
-                    warnings.warn(f"Indicator {indicator_name} returned empty Series, skipping")
+                    warnings.warn(
+                        f"Indicator {indicator_name} returned empty Series, skipping"
+                    )
                     continue
                 result[indicator_name] = indicator_result
             else:
-                warnings.warn(f"Indicator {indicator_name} returned unexpected type {type(indicator_result)}, skipping")
+                warnings.warn(
+                    f"Indicator {indicator_name} returned unexpected type {type(indicator_result)}, skipping"
+                )
                 continue
-                
+
         except Exception as e:
-            raise ValidationError(f"Error calculating indicator '{indicator_name}': {str(e)}")
+            raise ValidationError(
+                f"Error calculating indicator '{indicator_name}': {str(e)}"
+            )
 
     return result
