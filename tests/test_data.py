@@ -2,7 +2,6 @@
 
 import pytest
 import pandas as pd
-from datetime import datetime, timedelta
 
 from riskoptimix import get_data
 from riskoptimix.exceptions import ValidationError
@@ -30,3 +29,7 @@ def test_get_data_invalid_dates():
     """ Test invalid dates """
     with pytest.raises(ValidationError):
         get_data('AAPL', start='2024-01-31', end='2024-01-01')
+
+
+if __name__ == "__main__":
+    pytest.main()

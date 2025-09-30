@@ -1,5 +1,6 @@
 """ Data fetching and handling utilities """
 
+# Import used libraries
 import logging
 from datetime import datetime, timedelta
 from typing import Optional, Union
@@ -79,9 +80,6 @@ def get_data(
             start=start,
             end=end,
             interval=interval,
-            auto_adjust=True, # Adjust for splits and dividends
-            prepost=False,
-            threads=True,
         )
 
         if df.empty:
